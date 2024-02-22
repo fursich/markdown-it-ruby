@@ -8,6 +8,9 @@ publish = false
 
 [lib]
 crate-type = ["cdylib"]
+doc = false
 
 [dependencies]
 magnus = { version = "0.6.2" }
+markdown-it     = ">= 0.6"
+url             = ">= 2.5"
