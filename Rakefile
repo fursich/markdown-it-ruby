@@ -13,10 +13,10 @@ require "rb_sys/extensiontask"
 
 task build: :compile
 
-GEMSPEC = Gem::Specification.load("markdown_rustified.gemspec")
+GEMSPEC = Gem::Specification.load("markdown_it_ruby.gemspec")
 
-RbSys::ExtensionTask.new("markdown_rustified", GEMSPEC) do |ext|
-  ext.lib_dir = "lib/markdown_rustified"
+RbSys::ExtensionTask.new("markdown_it_ruby", GEMSPEC) do |ext|
+  ext.lib_dir = "lib/markdown_it_ruby"
 end
 
 task default: %i[compile spec rubocop]

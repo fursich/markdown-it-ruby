@@ -3,4 +3,4 @@
 require "mkmf"
 require "rb_sys/mkmf"
 
-create_rust_makefile("markdown_rustified/markdown_rustified")
+create_rust_makefile("markdown_it_ruby/markdown_it_ruby")

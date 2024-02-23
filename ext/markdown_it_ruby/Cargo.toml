@@ -1,0 +1,18 @@
+[package]
+name = "markdown_it_ruby"
+version = "0.2.2"
+edition = "2021"
+authors = ["Koji Onishi <fursich0@gmail.com>"]
+license = "MIT"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+doc = false
+
+[dependencies]
+magnus       = { version = "0.7.1" }
+markdown-it  = ">= 0.6"
+url          = ">= 2.5"
+regex        = ">= 1.10"
+uuid         = { version = ">= 1.8", features = ["v4"] }

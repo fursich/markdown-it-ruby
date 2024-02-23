@@ -3,5 +3,5 @@
 # in the ext/ directory.
 
 [workspace]
-members = ["./ext/markdown_rustified"]
+members = ["./ext/markdown_it_ruby"]
 resolver = "2"

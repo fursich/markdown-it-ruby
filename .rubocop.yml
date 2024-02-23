@@ -1,13 +1,171 @@
+# certain cops (checks) and to alter their behavior if they accept
+# any parameters. The file can be placed either in your home
+# directory or in some project directory.
+#
+# RuboCop will start looking for the configuration file in the directory
+# where the inspected file is and continue its way up to the root directory.
+#
+# See https://docs.rubocop.org/rubocop/configuration
+
+require:
+  - rubocop-rspec
+
 AllCops:
-  TargetRubyVersion: 3.0
+  TargetRubyVersion: 3.2
+  NewCops: enable
+  Exclude:
+    - "bin/*"
+    - "vendor/**/*"
+    - "db/schema.rb"
+    - "db/migrate/**/*.rb"
+    - "lib/openapi/**/*"
 
-Style/StringLiterals:
-  Enabled: true
-  EnforcedStyle: double_quotes
+Metrics/BlockLength:
+  Exclude:
+    - "lib/tasks/**/*"
+    - "config/routes.rb"
+    - "config/environments/*.rb"
+    - "config/initializers/*.rb"
+    - "test/**/*"
+    - "spec/**/*"
 
-Style/StringLiteralsInInterpolation:
+Lint/EmptyBlock:
+  Exclude:
+    - "test/factories/**/*.rb"
+
+# blockの書き方を、関数か手続きかで書き分けることで意図を伝えたい
+Style/BlockDelimiters:
+  EnforcedStyle: semantic
+  # single linerに限って { } を許す（モデルやコントローラのDSLをdo..endで改行すると冗長になるので）
+  AllowBracesOnProceduralOneLiners: true
+  # let, beforeブロックやfactoryの書き方はDSLの慣習に合わせたいので緩めておく
+  Exclude:
+    - "spec/**/*.rb"
+
+# classにドキュメント必須とはしない（乖離が生まれるためコードを正とする）
+Style/Documentation:
+  Enabled: false
+
+# 日本語によるコードコメントを許可。開発チームが多国籍化する場合は再検討
+Style/AsciiComments:
+  Enabled: false
+
+# single-linerを強制せず、明示的にIFブロックを示すことを許す
+Style/IfUnlessModifier:
+  Enabled: false
+
+Style/RedundantFetchBlock:
+  # railsの設定ファイルはデフォルトでfetchにブロックを利用するため、そちらの記法に合わせておく
+  Exclude:
+    - "config/**/*.rb"
+
+# Style/HashSyntax:
+#   # TODO: defaultの `always`だと違反コードが目立つため、いったんは旧来のRubyistが
+#   # 慣れている冗長な書き方を許可する。
+#   # どこかの時点でこれを外し、新しいシンタックスに一括移行したい
+#   EnforcedShorthandSyntax: either
+
+Style/RescueModifier:
+  Exclude:
+    - "spec/**/*_spec.rb"
+
+# spec内ではDSL的に見やすい記法を許可する
+# （require_parenthesis, omit_parenthesisいずれも強制せず、実装者に委ねる）
+Style/MethodCallWithArgsParentheses:
+  Exclude:
+    - "spec/**/*_spec.rb"
+
+# 最終要素の追加・削除時に他の要素に差分が出ることがあるため、いわゆるケツカンマを許可する
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: comma
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: comma
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: comma
+
+Style/FrozenStringLiteralComment:
+  # 本番でrequireされない場所は高速化に寄与しないため、実装の簡便さのために許可しておく
+  Exclude:
+    - "db/**/*/"
+    - "lib/tasks"
+
+Metrics/MethodLength:
   Enabled: true
-  EnforcedStyle: double_quotes
+  CountComments: false
+  Max: 20
+
+Layout/HashAlignment:
+  EnforcedHashRocketStyle: "table"
+  EnforcedColonStyle: "table"
 
 Layout/LineLength:
-  Max: 120
+  Max: 130
+  AllowedPatterns: ['(\A|\s)#'] # ignore comments
+  Exclude:
+    - "db/fixtures/**"
+    - "spec/**/*"
+    - "config/initializers/*.rb"
+
+Metrics/AbcSize:
+  Max: 20
+
+Style/StringLiterals:
+  Enabled: false
+
+# ブロック表記を明示的にしておきます。（暗黙のブロック引数のバケツリレーを期待していると、引数漏れに気づかないので）
+# https://www.rubydoc.info/gems/rubocop/RuboCop/Cop/Naming/BlockForwarding
+Naming/BlockForwarding:
+  EnforcedStyle: explicit
+
+RSpec/ExampleLength:
+  # 配列やハッシュは記法により行数を稼ぐため許可しておく
+  CountAsOne: ["array", "hash", "heredoc"]
+  # system specはシナリオテストのため長くなることを受け入れる
+  Exclude:
+    - "spec/system/**/*"
+
+RSpec/MultipleExpectations:
+  # system specにかぎって複数の期待値を許可する
+  Exclude:
+    - "spec/system/**/*"
+
+RSpec/ExampleWithoutDescription:
+  EnforcedStyle: single_line_only
+
+RSpec/NestedGroups:
+  # request specやmodelの責務が大きなメソッドのテストで複合条件を表現するために
+  # contextを重ねることがあるため、条件を緩和しています (default Max: 3)
+  Max: 8
+
+RSpec/NamedSubject:
+  # 副作用のテストをする際にsubjectを単体で使うことが多い。各テストでsubjectとして
+  # テスト対象を明示することを迂回させたくないのと、named subjectでなければ読みづらい
+  # ケースが特にみられないので切っておく
+  Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  # テストケースのコンテキストが複合していくと増えてしまうため、現状に合わせておく(default 5)
+  # 特に依存関係が深いパターンが多いがrspec-parameterizedなどを使って利用を減らす
+  Max: 10
+
+RSpec/ContextWording:
+  Prefixes:
+    - when
+    - with
+    - without
+    - if
+    - unless
+    - for
+    - before
+    - after
+    - in
+  AllowedPatterns:
+    - /とき$/
+    - /時$/
+    - /場合$/
+
+RSpec/IndexedLet:
+  # テストケース中で特に区別する理由のない２つのレコードにindexを多用しているが
+  # 変数名には適切な意図が表現されるよう意識されていることが多く現状それほど困っていない。
+  # 実装の簡便性を重視しいったん黙らせる。
+  Enabled: false
