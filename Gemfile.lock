@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     markdown_it_ruby (0.1.0)
+      rb_sys (~> 0.9.63)
 
 GEM
   remote: https://rubygems.org/
@@ -67,7 +68,6 @@ DEPENDENCIES
   markdown_it_ruby!
   rake (~> 13.0)
   rake-compiler
-  rb_sys (~> 0.9.63)
   rspec (~> 3.0)
   rubocop (~> 1.21)
   rubocop-rspec
