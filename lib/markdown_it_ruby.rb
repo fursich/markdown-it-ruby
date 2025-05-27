@@ -10,6 +10,6 @@ module MarkdownIt
     options.transform_keys!(&:to_s)
     options.transform_values!(&:to_s)
 
-    __convert(input, **options)
+    __convert(input, options)
   end
 end
