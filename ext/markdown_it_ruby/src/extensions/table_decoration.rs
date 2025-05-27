@@ -1,26 +1,9 @@
 use crate::driver::MarkdonwItOptions;
 use markdown_it::parser::core::CoreRule;
 use markdown_it::plugins::extra::tables::Table;
-use markdown_it::{MarkdownIt, Node, NodeValue, Renderer};
+use markdown_it::{MarkdownIt, Node};
 
 #[derive(Debug)]
-pub struct TableDecoration {
-    pub table: Table,
-    pub class_name: String,
-}
-
-impl NodeValue for TableDecoration {
-    fn render(&self, node: &Node, fmt: &mut dyn Renderer) {
-        let class_name = self.class_name.clone();
-        let div_attrs = vec![("class", class_name)];
-        fmt.open("div", &div_attrs);
-        fmt.cr();
-        self.table.render(node, fmt);
-        fmt.cr();
-        fmt.close("div");
-    }
-}
-
 struct TableDecorationRule;
 
 impl CoreRule for TableDecorationRule {
@@ -33,12 +16,10 @@ impl CoreRule for TableDecorationRule {
         };
         root.walk_mut(|node, _| {
             if let Some(table) = node.cast::<Table>() {
-                node.replace(TableDecoration {
-                    table: Table {
-                        alignments: table.alignments.clone(),
-                    },
-                    class_name: table_class_name.clone(),
-                })
+                node.replace(Table {
+                    alignments: table.alignments.clone(),
+                });
+                node.attrs = vec![("class", table_class_name.clone())];
             }
         });
     }
@@ -65,7 +46,7 @@ fn test_table_decoration() {
 
         assert_eq!(
             html,
-            "<div class=\"table\">\n<table>\n<thead>\n<tr>\n<th style=\"text-align:left\">左寄せタイトル</th>\n<th style=\"text-align:center\">センタリング</th>\n<th style=\"text-align:right\">右寄せタイトル</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align:left\">column</td>\n<td style=\"text-align:center\">column</td>\n<td style=\"text-align:right\">column</td>\n</tr>\n</tbody>\n</table>\n</div>"
+            "<table class=\"table\">\n<thead>\n<tr>\n<th style=\"text-align:left\">左寄せタイトル</th>\n<th style=\"text-align:center\">センタリング</th>\n<th style=\"text-align:right\">右寄せタイトル</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align:left\">column</td>\n<td style=\"text-align:center\">column</td>\n<td style=\"text-align:right\">column</td>\n</tr>\n</tbody>\n</table>\n"
         )
     }
 
@@ -82,7 +63,7 @@ fn test_table_decoration() {
 
         assert_eq!(
             html,
-            "<div class=\"custom-table-class-name\">\n<table>\n<thead>\n<tr>\n<th style=\"text-align:left\">左寄せタイトル</th>\n<th style=\"text-align:center\">センタリング</th>\n<th style=\"text-align:right\">右寄せタイトル</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align:left\">column</td>\n<td style=\"text-align:center\">column</td>\n<td style=\"text-align:right\">column</td>\n</tr>\n</tbody>\n</table>\n</div>"
+            "<table class=\"custom-table-class-name\">\n<thead>\n<tr>\n<th style=\"text-align:left\">左寄せタイトル</th>\n<th style=\"text-align:center\">センタリング</th>\n<th style=\"text-align:right\">右寄せタイトル</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td style=\"text-align:left\">column</td>\n<td style=\"text-align:center\">column</td>\n<td style=\"text-align:right\">column</td>\n</tr>\n</tbody>\n</table>\n"
         )
     }
 }

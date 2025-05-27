@@ -30,7 +30,7 @@ RSpec.describe MarkdownIt do
       let(:expected_output) { File.read('spec/fixtures/dummy_output.html') }
 
       it 'converts markdown content to html' do
-        expect(subject).to match(expected_output)
+        expect(subject).to eq(expected_output)
       end
     end
   end
